@@ -8,7 +8,7 @@ const rl = readline.createInterface({
 
 global.version = {
   name: "Neptune",
-  string: "1.0.0-rc1"
+  string: "1.0.0-rc2"
 }
 
 console.clear();
@@ -45,15 +45,15 @@ fs.readdir("./modules", function(error, files) {
   } else {
     let modules = files.filter(f => f.split(".").pop() === "js");
     let counter = 0;
-    try {
       modules.forEach((f, i) => {
-        let props = require(`./modules/${f}`);
-        counter++;
+        try {
+          let props = require(`./modules/${f}`);
+          counter++;
+        } catch (err) {
+          log(err.stack, logging.error, sources.modules);
+        }
       })
-    } catch (err) {
-      log(err.stack, logging.error, sources.modules);
-    }
     log("loaded " + counter + " modules", logging.success, sources.modules);
-    log("started on version " + version.string + " " + version.name, logging.success, sources.core);
   }
+  log("started on version " + version.string + " " + version.name, logging.success, sources.core);
 })
