@@ -48,9 +48,9 @@ global.log = function(message, type, sender) {
   if(!type || settings.noColor) type = 97;
   if(settings.overrides[type]) type = settings.overrides[type] // it is intended functionality that you can change the color if it is in noColor mode
   if(!sender) {
-    console.log("\x1b[" + type + "m" + message);
+    console.log("\x1b[" + type + "m" + message + "\x1b[" + logging.output + "m");
   } else {
-    console.log("\x1b[" + type + "m" + sender + ": " + message);
+    console.log("\x1b[" + type + "m" + sender + ": " + message + "\x1b[" + logging.output + "m");
   }
 }
 
