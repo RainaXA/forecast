@@ -8,11 +8,12 @@ global.rl = readline.createInterface({
 
 global.version = {
   name: "Ceres",
-  string: "1.1.0-dev23.06.25"
+  string: "1.1.0-dev23.06.26"
 }
 
 try {
   var settings = require('./settings.json') // retain forwards compatibility easily - will be global variable in 1.2.0
+  if(!settings.overrides) settings.overrides = {}
   // doNotLogStartup: 0 = log it fully, 1 = only display how many modules loaded, 2 = display none
 } catch(err) {
   var settings = {
@@ -47,10 +48,12 @@ if(settings.overrides) {
 global.log = function(message, type, sender) {
   if(!type || settings.noColor) type = 97;
   if(settings.overrides[type]) type = settings.overrides[type] // it is intended functionality that you can change the color if it is in noColor mode
+  let resetColor = 0
+  if(settings.overrides['97'] && settings.noColor) resetColor = settings.overrides['97']
   if(!sender) {
-    console.log("\x1b[" + type + "m" + message + "\x1b[" + logging.output + "m");
+    console.log("\x1b[" + type + "m" + message + "\x1b[" + resetColor + "m");
   } else {
-    console.log("\x1b[" + type + "m" + sender + ": " + message + "\x1b[" + logging.output + "m");
+    console.log("\x1b[" + type + "m" + sender + ": " + message + "\x1b[" + resetColor + "m");
   }
 }
 
