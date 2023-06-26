@@ -1,6 +1,6 @@
 const fs = require('fs');
 const readline = require('readline');
-const rl = readline.createInterface({
+global.rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
   terminal: false
@@ -8,7 +8,7 @@ const rl = readline.createInterface({
 
 global.version = {
   name: "Neptune",
-  string: "1.0.0-rc2"
+  string: "1.0.0"
 }
 
 console.clear();
@@ -24,8 +24,7 @@ global.logging = {
   warn: 93,
   info: 94,
   success: 92,
-  output: 97,
-  input: 37
+  output: 97
 }
 
 global.log = function(message, type, sender) {
@@ -38,22 +37,22 @@ global.log = function(message, type, sender) {
 }
 log("starting", logging.success, sources.core);
 
-fs.readdir("./modules", function(error, files) {
+fs.readdir("./modules/", function(error, files) {
   if (error) {
     fs.mkdirSync("./modules/");
     log("folder not found, creating now", logging.warn, sources.modules);
   } else {
     let modules = files.filter(f => f.split(".").pop() === "js");
     let counter = 0;
-      modules.forEach((f, i) => {
-        try {
-          let props = require(`./modules/${f}`);
-          counter++;
-        } catch (err) {
-          log(err.stack, logging.error, sources.modules);
-        }
-      })
-    log("loaded " + counter + " modules", logging.success, sources.modules);
+    modules.forEach((f, i) => {
+      try {
+        let props = require(`./modules/${f}`);
+      } catch (err) {
+        log(err.stack, logging.error, sources.modules);
+        counter++;
+      }
+    })
+    log("loaded " + (modules.length - counter) + " modules", logging.success, sources.modules);
   }
   log("started on version " + version.string + " " + version.name, logging.success, sources.core);
 })
