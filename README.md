@@ -16,7 +16,7 @@ It's simple!
 ## Documentation
 This section shall be dedicated to documenting the functions of Forecast, as of 1.0.0.
 
-# Logging
+### Logging
 `log()` provided by Forecast should always be used rather than `console.log()`!
 `log()` provides color easily, and is integrated deeper into Forecast. 
 As an example, `1.1.0` will include options of changing the colors provided by default - meaning `log()` will work better with the user!
@@ -34,5 +34,5 @@ As an ANSI escape code can work too, `log("this is purple", 95)` will output "th
 A sender may also be included as the final argument, which will include the source of the message. It is preferrable to include your source under `global.sources`, although any string will suffice.
 For example, `log("core info message!", logging.info, sources.core)` will send "forecast: core info message!" in blue text.
 
-# Console command system
+### Console command system
 Simply put, it's `readline` as a global variable! Across all modules, you can add an event listener using `rl.on` as `rl` is a global variable, allowing consistency throughout all modules.
