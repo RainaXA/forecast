@@ -3,8 +3,16 @@ Forecast is a basic lightweight framework written in Node.js, intended to make N
 Forecast includes a module loader, colored logging system, and a console command system.
 
 ## Requirements
-Node.js is required to run Forecast 1.0.0. It is unknown which Node.js version is the earliest that is able to run it - testing will occur soon.
-Forecast has no other dependencies.
+Node.js v8.3.0 or later is required to run Forecast 1.0.0. Windows 7 is the earliest Windows version to run Forecast without any modifications.
+
+If you wish to run Forecast on Windows XP or Vista (using at least Node.js v5.12, earlier may or may not work), use the following steps:
+
+1. Create an empty line above the first line.
+2. On the new first line, write `'use strict'`.
+3. Comment out line 15 (`console.clear()`), and make a new line.
+4. Paste `process.stdout.write('\x1Bc');` into the new line.
+
+**It's important to note that Forecast modules may not work on modified Forecast.** 
 
 ## Where to Begin
 It's simple! 
