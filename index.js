@@ -1,3 +1,4 @@
+'use strict' // node.js v4 compatibility
 const fs = require('fs');
 const readline = require('readline');
 global.rl = readline.createInterface({
@@ -8,7 +9,8 @@ global.rl = readline.createInterface({
 
 global.version = {
   name: "Ceres",
-  string: "1.1.0-dev23.06.26"
+  string: "1.1.0-rc1" // known bug: setting a number color override also overrides any direct global.logging type colors set
+  // to be fixed in next version; intended functionality is that the overrides DO NOT COLLIDE
 }
 
 try {
@@ -21,7 +23,7 @@ try {
   }; // if this line doesn't exist then things that want to look for settings are undefined which therefore crashes forecast
 }
 
-console.clear();
+process.stdout.write('\x1Bc'); // node.js v4 compatibility
 process.title = "Forecast " + version.string + " " + version.name;
 
 global.sources = {
@@ -64,7 +66,7 @@ if(!fs.existsSync("./settings.json")) log("settings.json does not exist. you can
 fs.readdir("./modules/", function(error, files) {
   if (error) {
     fs.mkdirSync("./modules/");
-    if(settings.doNotLogStartup >= 0) log("folder not found, creating now", logging.warn, sources.modules);
+    if(settings.doNotLogStartup != 2) log("folder not found, creating now", logging.warn, sources.modules);
   } else {
     let modules = files.filter(f => f.split(".").pop() === "js");
     let counter = 0;
