@@ -9,8 +9,7 @@ global.rl = readline.createInterface({
 
 global.version = {
   name: "Ceres",
-  string: "1.1.0-rc1" // known bug: setting a number color override also overrides any direct global.logging type colors set
-  // to be fixed in next version; intended functionality is that the overrides DO NOT COLLIDE
+  string: "1.1.0-rc2"
 }
 
 try {
@@ -39,18 +38,14 @@ global.logging = {
   output: 97
 }
 
-if(settings.overrides) {
-  if(settings.overrides.error) logging.error = settings.overrides.error
-  if(settings.overrides.warn) logging.warn = settings.overrides.warn
-  if(settings.overrides.info) logging.info = settings.overrides.info
-  if(settings.overrides.success) logging.success = settings.overrides.success
-  if(settings.overrides.output) logging.output = settings.overrides.output
+for(const override in settings.overrides) {
+	if(isNaN(override)) settings.overrides[logging[override]] = settings.overrides[override] // set the number of a logging type as an override directly to be interpreted by log()
 }
 
 global.log = function(message, type, sender) {
   if(!type || settings.noColor) type = 97;
-  if(settings.overrides[type]) type = settings.overrides[type] // it is intended functionality that you can change the color if it is in noColor mode
-  let resetColor = 0
+  if(settings.overrides[type]) type = settings.overrides[type]; // it is intended functionality that you can change the color if it is in noColor mode
+  let resetColor = 0;
   if(settings.overrides['97'] && settings.noColor) resetColor = settings.overrides['97']
   if(!sender) {
     console.log("\x1b[" + type + "m" + message + "\x1b[" + resetColor + "m");
@@ -61,7 +56,6 @@ global.log = function(message, type, sender) {
 
 if(settings.doNotLogStartup != 1 && settings.doNotLogStartup != 2) log("starting", logging.success, sources.core); // this is the only way i can get this bullshit to work currently and i am impatient
 if(!fs.existsSync("./settings.json")) log("settings.json does not exist. you can create it to change some basic functionality of forecast!", logging.info, sources.core)
-
 
 fs.readdir("./modules/", function(error, files) {
   if (error) {
