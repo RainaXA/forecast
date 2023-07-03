@@ -55,7 +55,7 @@ Inside of `settings.json`, there are three key settings you can do:
 3. `overrides`. This is an object, and each value in the object should contain an ANSI color code, or any element from `logging`.
 
 Here's an example of a full `settings.json`:
-```
+```js
 {
 	"doNotLogStartup": 2,
 	"noColor": true,
