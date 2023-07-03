@@ -9,7 +9,7 @@ global.rl = readline.createInterface({
 
 global.version = {
   name: "Ceres",
-  string: "1.1.0-rc2"
+  string: "1.1.0"
 }
 
 try {
@@ -23,7 +23,7 @@ try {
 }
 
 process.stdout.write('\x1Bc'); // node.js v4 compatibility
-process.title = "Forecast " + version.string + " " + version.name;
+process.title = `Forecast ${version.string} ${version.name}`;
 
 global.sources = {
   core: "forecast",
@@ -48,9 +48,9 @@ global.log = function(message, type, sender) {
   let resetColor = 0;
   if(settings.overrides['97'] && settings.noColor) resetColor = settings.overrides['97']
   if(!sender) {
-    console.log("\x1b[" + type + "m" + message + "\x1b[" + resetColor + "m");
+	console.log(`\x1b[${type}m${message}\x1b[${resetColor}m`);
   } else {
-    console.log("\x1b[" + type + "m" + sender + ": " + message + "\x1b[" + resetColor + "m");
+	console.log(`\x1b[${type}m${sender}: ${message}\x1b[${resetColor}m`);
   }
 }
 
@@ -72,7 +72,7 @@ fs.readdir("./modules/", function(error, files) {
         counter++;
       }
     })
-    if(settings.doNotLogStartup != 2)  log("loaded " + (modules.length - counter) + " modules", logging.success, sources.modules);
+    if(settings.doNotLogStartup != 2)  log(`loaded ${(modules.length - counter)} modules`, logging.success, sources.modules);
   }
   if(settings.doNotLogStartup != 1 && settings.doNotLogStartup != 2)  log("started on version " + version.string + " " + version.name, logging.success, sources.core);
 })
