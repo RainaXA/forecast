@@ -42,3 +42,26 @@ For example, `log("core info message!", logging.info, sources.core)` will send "
 
 ### Console command system
 Simply put, it's `readline` as a global variable! Across all modules, you can add an event listener using `rl.on` as `rl` is a global variable, allowing consistency throughout all modules.
+
+### Settings
+Starting from 1.1.0, Forecast now allows for client-sided settings, in order to improve the user experience.
+
+To get started, you just have to create a new file in the Forecast folder named `settings.json`.
+
+Inside of `settings.json`, there are three key settings you can do:
+
+1. `doNotLogStartup`. Setting this to 0 will not do anything, setting it to 1 will only show module information, and setting it to 2 will not show anything.
+2. `noColor`. Setting this to `true` will set all color to white. If there is a color override of white, it will be set to that color instead.
+3. `overrides`. This is an object, and each value in the object should contain an ANSI color code, or any element from `logging`.
+
+Here's an example of a full `settings.json`:
+```
+{
+	"doNotLogStartup": 2,
+	"noColor": true,
+	"overrides": {
+		"error": 92,
+		"97": 91
+	}
+}
+```
