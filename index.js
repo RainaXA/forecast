@@ -74,5 +74,5 @@ fs.readdir("./modules/", function(error, files) {
     })
     if(settings.doNotLogStartup != 2)  log(`loaded ${(modules.length - counter)} modules`, logging.success, sources.modules);
   }
-  if(settings.doNotLogStartup != 1 && settings.doNotLogStartup != 2)  log("started on version " + version.string + " " + version.name, logging.success, sources.core);
+  log("started on version " + version.string + " " + version.name, logging.success, sources.core);
 })
