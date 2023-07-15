@@ -9,7 +9,7 @@ global.rl = readline.createInterface({
 
 global.version = {
   name: "Vesta",
-  string: "1.2.0-dev23.07.02"
+  string: "1.2.0-rc1"
 }
 
 try {
@@ -66,6 +66,17 @@ global.forecast = { // forecast functions - keep it in one object for low interf
 	isStr: function(value) {
 		return typeof value === 'string';
 	},
+	require: function(file, callback) {
+		file = "./modules/" + file
+		try {
+			let props = require(file);
+			return props;
+		} catch(err) {
+			let error = err.stack.split("\n")[0].length + 1;
+			if(!callback) return log("file " + file.slice(1) + " not found\n" + err.stack.slice(error), logging.error, sources.core);
+			callback();
+		}
+	}
 }
 
 for(const override in settings.overrides) {
@@ -105,4 +116,8 @@ fs.readdir("./modules/", function(error, files) {
     if(settings.doNotLogStartup != 2)  log("loaded " + (modules.length - counter) + " modules", logging.success, sources.modules);
   }
   if(settings.doNotLogStartup != 1 && settings.doNotLogStartup != 2)  log("started on version " + version.string + " " + version.name, logging.success, sources.core);
+})
+
+process.on('uncaughtException', function(err) {
+	log(err, logging.error)
 })
