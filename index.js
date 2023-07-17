@@ -9,7 +9,7 @@ global.rl = readline.createInterface({
 
 global.version = {
   name: "Vesta",
-  string: "1.2.0-rc1"
+  string: "1.2.0-rc2"
 }
 
 try {
@@ -108,6 +108,17 @@ fs.readdir("./modules/", function(error, files) {
     modules.forEach((f, i) => {
       try {
         let props = require(`./modules/${f}`);
+		if(!props.info) {
+			log(f + " does not have info (pre-1.2.0?)", logging.warn, sources.modules)
+		} else {
+			if(props.info.fVer) {
+				let forecastVersion = props.info.fVer;
+				if (parseInt(forecastVersion.split(".")[1]) + 4 <= parseInt(version.string.split(".")[1]) && !settings.hideCompatibility) log(props.info.name + " is older module [" + forecastVersion + " module running on forecast " + version.string + "]", logging.warn, sources.modules)
+				if (parseInt(forecastVersion.split(".")[1]) > parseInt(version.string.split(".")[1]) && !settings.hideCompatibility) log(props.info.name + " is newer than current forecast [" + forecastVersion + " module running on forecast " + version.string + "]", logging.warn, sources.modules)
+			} else {
+				log(f + " has info object, but not forecast version", logging.warn, sources.modules)
+			}
+		}
       } catch (err) {
         log(err.stack, logging.error, sources.modules);
         counter++;
