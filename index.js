@@ -8,14 +8,13 @@ global.rl = readline.createInterface({
 });
 
 global.version = {
-  name: "Ceres",
-  string: "1.1.0"
+  name: "Vesta",
+  string: "1.2.0"
 }
 
 try {
-  var settings = require('./settings.json') // retain forwards compatibility easily - will be global variable in 1.2.0
+  var settings = require('./settings.json')
   if(!settings.overrides) settings.overrides = {}
-  // doNotLogStartup: 0 = log it fully, 1 = only display how many modules loaded, 2 = display none
 } catch(err) {
   var settings = {
     overrides: {} // overrides is an object 
@@ -38,6 +37,48 @@ global.logging = {
   output: 97
 }
 
+global.forecast = { // forecast functions - keep it in one object for low interference 
+	version: version,
+	settings: settings,
+	arrays: {
+		delDup: function (array) {
+			array = new Set(array)
+			return Array.from(array) // done this odd way to retain node.js v4 compatibility
+		},
+		getText: function(text, list, type) {
+			switch(type) {
+				case 0: // includes
+					for(let i = 0; i < list.length; i++) {
+					  if(text.includes(list[i])) return true;
+					}
+					return false;
+				case 1: // exact
+					for(let i = 0; i < list.length; i++) {
+					  if(text == list[i]) return true;
+					}
+			}
+			return false;
+		},
+		shuffle: function(array) {
+			return array.sort(function(){return Math.random() - 0.5});
+		}
+	},
+	isStr: function(value) {
+		return typeof value === 'string';
+	},
+	require: function(file, callback) {
+		file = "./modules/" + file
+		try {
+			let props = require(file);
+			return props;
+		} catch(err) {
+			let error = err.stack.split("\n")[0].length + 1;
+			if(!callback) return log("file " + file.slice(1) + " not found\n" + err.stack.slice(error), logging.error, sources.core);
+			callback();
+		}
+	}
+}
+
 for(const override in settings.overrides) {
 	if(isNaN(override)) settings.overrides[logging[override]] = settings.overrides[override] // set the number of a logging type as an override directly to be interpreted by log()
 }
@@ -48,9 +89,9 @@ global.log = function(message, type, sender) {
   let resetColor = 0;
   if(settings.overrides['97'] && settings.noColor) resetColor = settings.overrides['97']
   if(!sender) {
-	console.log(`\x1b[${type}m${message}\x1b[${resetColor}m`);
+    console.log("\x1b[" + type + "m" + message + "\x1b[" + resetColor + "m");
   } else {
-	console.log(`\x1b[${type}m${sender}: ${message}\x1b[${resetColor}m`);
+    console.log("\x1b[" + type + "m" + sender + ": " + message + "\x1b[" + resetColor + "m");
   }
 }
 
@@ -67,12 +108,24 @@ fs.readdir("./modules/", function(error, files) {
     modules.forEach((f, i) => {
       try {
         let props = require(`./modules/${f}`);
+		if(!props.info) {
+			log(f + " does not have info (pre-1.2.0?)", logging.warn, sources.modules)
+		} else {
+			if(!props.info.name || !props.info.desc || !props.info.ver || !props.info.fVer) return log(f + " has an invalid info page - must contain name, desc, ver, and fVer", logging.warn, sources.modules)
+			let forecastVersion = props.info.fVer;
+			if (parseInt(forecastVersion.split(".")[1]) + 4 <= parseInt(version.string.split(".")[1]) && !settings.hideCompatibility) log(props.info.name + " is older module [" + forecastVersion + " module running on forecast " + version.string + "]", logging.warn, sources.modules)
+			if (parseInt(forecastVersion.split(".")[1]) > parseInt(version.string.split(".")[1]) && !settings.hideCompatibility) log(props.info.name + " is newer than current forecast [" + forecastVersion + " module running on forecast " + version.string + "]", logging.warn, sources.modules)
+		}
       } catch (err) {
         log(err.stack, logging.error, sources.modules);
         counter++;
       }
     })
-    if(settings.doNotLogStartup != 2)  log(`loaded ${(modules.length - counter)} modules`, logging.success, sources.modules);
+    if(settings.doNotLogStartup != 2)  log("loaded " + (modules.length - counter) + " modules", logging.success, sources.modules);
   }
-  log("started on version " + version.string + " " + version.name, logging.success, sources.core);
+  if(settings.doNotLogStartup != 1 && settings.doNotLogStartup != 2)  log("started on version " + version.string + " " + version.name, logging.success, sources.core);
+})
+
+process.on('uncaughtException', function(err) {
+	log(err, logging.error)
 })
